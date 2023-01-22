@@ -1,8 +1,8 @@
-import React from 'react'
-import { View, Text, StyleSheet, Image} from 'react-native'
-import { colors } from '../utils/utility'
+import React from 'react';
+import { View, Text, StyleSheet, Image} from 'react-native';
+import { colors } from '../utils/utility';
 
-const { PRIMARY_COLOR } = colors
+const { PRIMARY_COLOR } = colors;
 
 export default function Weather({ currentWeatherDetails }) {
     const {
@@ -19,7 +19,7 @@ export default function Weather({ currentWeatherDetails }) {
             </View>
             <Image style={styles.bottomImage} source={require('../../assets/sun-image.png')} />
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -51,4 +51,4 @@ const styles = StyleSheet.create({
         height: 100,
         width: 100
     }
-})
+});

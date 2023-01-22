@@ -18,12 +18,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+        "infoPlist": {
+          "UIBackgroundModes": [
+            "location",
+            "fetch"
+          ],
+          "NSLocationWhenInUseUsageDescription": "text",
+          "NSLocationAlwaysAndWhenInUseUsageDescription": "text",
+          "NSLocationAlwaysUsageDescription": "text"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#FFFFFF",
+        "permissions": [
+          "ACCESS_BACKGROUND_LOCATION"
+        ]
       }
     },
     "web": {

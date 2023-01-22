@@ -1,53 +1,55 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import * as Location from 'expo-location';
-import Weather from './src/components/Weather'
-import { colors } from './src/utils/utility'
+import { requestForegroundPermissionsAsync, getCurrentPositionAsync, Accuracy } from 'expo-location';
+import Weather from './src/components/Weather';
+import { colors } from './src/utils/utility';
 
-const WEATHER_API_KEY = "b49c7e3e06eaa12a063660a08bbcb8c2";
-const BASE_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?";
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+const BASE_WEATHER_URL = process.env.BASE_WEATHER_URL;
 
 export default function App() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [currentWeather, setCurrentWeather] = useState(null);
   const [currentWeatherDetails, setCurrentWeatherDetails] = useState(null);
-  const [unitsSystem, setUnitsSystem] = useState('metric')
+  const [unitsSystem, setUnitsSystem] = useState('metric');
 
   useEffect(() => {
     load();
   }, [unitsSystem]);
 
   async function load() {
-    setCurrentWeatherDetails(null)
-    setCurrentWeather(null)
-    setErrorMessage(null)
+    setCurrentWeatherDetails(null);
+    setCurrentWeather(null);
+    setErrorMessage(null);
 
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      // console.log(Location);
+      let { status } = await requestForegroundPermissionsAsync();
       if (status != "granted") {
         setErrorMessage("Please Grant Access To Use The App!");
         return;
       }
-      const location = await Location.getCurrentPositionAsync();
+      const location = await getCurrentPositionAsync({
+        accuracy: Accuracy.Highest,
+        maximumAge: 10000
+      });
 
       const { latitude, longitude } = location.coords;
       const weatherUrl = `${BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&units=${unitsSystem}&appid=${WEATHER_API_KEY}`;
-      const response = await fetch(weatherUrl)
-      const result = await response.json()
+      const response = await fetch(weatherUrl);
+      const result = await response.json();
 
 
       if (response.ok) {
-        setCurrentWeather(result.main.temp)
-        setCurrentWeatherDetails(result)
+        setCurrentWeather(result.main.temp);
+        setCurrentWeatherDetails(result);
       }
       else {
-        setErrorMessage(result.message)
+        setErrorMessage(result.message);
       }
 
     } catch (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(error.message);
     }
   }
   if (currentWeatherDetails) {
@@ -65,7 +67,6 @@ export default function App() {
       <View style={styles.container}>
         <Text>{errorMessage}</Text>
         <StatusBar style="auto" />
-
       </View>
     );
   }
