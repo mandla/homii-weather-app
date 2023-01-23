@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync, Accuracy } from 'expo-location';
 import Weather from './src/components/Weather';
-import { colors } from './src/utils/utility';
+import { colors } from './src/utils/colors';
+import { errorMessages } from './src/utils/errorMessages';
+import { sentryLog } from './src/utils/sentryWrapper';
 
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
-const BASE_WEATHER_URL = process.env.BASE_WEATHER_URL;
+const REACT_APP_WEATHER_API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+const REACT_APP_BASE_WEATHER_URL = process.env.REACT_APP_BASE_WEATHER_URL;
 
 export default function App() {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -29,29 +31,52 @@ export default function App() {
         setErrorMessage("Please Grant Access To Use The App!");
         return;
       }
+
       const location = await getCurrentPositionAsync({
         accuracy: Accuracy.Highest,
         maximumAge: 10000
       });
 
       const { latitude, longitude } = location.coords;
-      const weatherUrl = `${BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&units=${unitsSystem}&appid=${WEATHER_API_KEY}`;
-      const response = await fetch(weatherUrl);
-      const result = await response.json();
+      const weatherJsonData = await fetch(`${REACT_APP_BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&units=${unitsSystem}&appid=${REACT_APP_WEATHER_API_KEY}`)
+        .then((response) => {
+          if (!response.ok) {
+            switch (response.status) {
+              case 400: setErrorMessage(errorMessages.BAD_REQUEST); break;
+              case 401: setErrorMessage(errorMessages.UNAUTHORISED); break;
+              case 404: setErrorMessage(errorMessages.PAGE_NOT_FOUND); break;
+              case 500: setErrorMessage(errorMessages.INTERNAL_SERVER_ERROR); break;
+              default: return null;
+            }
+            return null;
+          }
+          return response.json()
+        })
+        .catch(error => {
+          setErrorMessage(errorMessages.INTERNAL_SERVER_ERROR);
+        })
+        .then((data) => {
+          console.log(data);
+          return data;
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
 
 
-      if (response.ok) {
-        setCurrentWeather(result.main.temp);
-        setCurrentWeatherDetails(result);
+      if (weatherJsonData) {
+        setCurrentWeather(weatherJsonData.main.temp);
+        setCurrentWeatherDetails(weatherJsonData);
       }
       else {
-        setErrorMessage(result.message);
+        sentryLog.error(errorMessage);
       }
 
     } catch (error) {
-      setErrorMessage(error.message);
+      sentryLog.error(errorMessage);
     }
   }
+
   if (currentWeatherDetails) {
     return (
       <View style={styles.container}>
@@ -78,7 +103,6 @@ export default function App() {
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

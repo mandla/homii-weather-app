@@ -19,14 +19,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-        "infoPlist": {
-          "UIBackgroundModes": [
-            "location",
-            "fetch"
-          ],
-          "NSLocationWhenInUseUsageDescription": "text",
-          "NSLocationAlwaysAndWhenInUseUsageDescription": "text",
-          "NSLocationAlwaysUsageDescription": "text"
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
+        "NSLocationWhenInUseUsageDescription": "text",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "text",
+        "NSLocationAlwaysUsageDescription": "text"
       }
     },
     "android": {
@@ -40,6 +40,11 @@
     },
     "web": {
       "favicon": "./assets/homii-logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8e5dea5c-4476-4fbf-b231-e2ccf71f0a3c"
+      }
     }
   }
 }
