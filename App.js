@@ -69,11 +69,11 @@ export default function App() {
         setCurrentWeatherDetails(weatherJsonData);
       }
       else {
-        sentryLog.error(errorMessage);
+        sentryLog().error("homii-error: ", errorMessage);
       }
 
-    } catch (errorMessage) {
-      sentryLog.error(errorMessage);
+    } catch (error) {
+      sentryLog().error("homii-error: ", error);
     }
   }
 

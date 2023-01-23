@@ -10,4 +10,10 @@ export function sentryLog() {
     function error(data) {
         console.error(data);
     }
+
+    return {
+        info,
+        debug,
+        error,
+    }
 }
