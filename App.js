@@ -72,7 +72,7 @@ export default function App() {
         sentryLog.error(errorMessage);
       }
 
-    } catch (error) {
+    } catch (errorMessage) {
       sentryLog.error(errorMessage);
     }
   }
